@@ -22,3 +22,17 @@ exports.posts_list = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.post_details = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const post = await Post.findById(id).exec();
+    if (!post) return next({ status: 404, message: 'Post not found' });
+    return res.json(post);
+  } catch (err) {
+    if (err instanceof mongoose.Error.CastError) {
+      return next({ status: 404, message: 'Post not found' });
+    }
+    next(err);
+  }
+};
