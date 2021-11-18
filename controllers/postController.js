@@ -1,4 +1,5 @@
 const Post = require('../models/Post');
+const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
 
 exports.posts_list = async (req, res, next) => {

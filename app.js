@@ -22,14 +22,17 @@ app.use(passport.initialize());
 app.use('/', postRoutes);
 app.use('/user', userRoutes);
 
-app.use(function errorHandler(err, req, res, next) {
-  res
-    .status(err.status || 500)
-    .json({ status: err.status, message: err.message });
+app.use((req, res, next) => {
+  const err = new Error('Not found');
+  err.status = 404;
+  next(err);
 });
 
-app.use(function handle404(req, res, next) {
-  res.status(404).json('Not found');
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.json({
+    error: err.message,
+  });
 });
 
 const port = process.env.PORT || 3000;

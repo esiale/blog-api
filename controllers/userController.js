@@ -17,7 +17,6 @@ exports.signup = [
         const user = await User.findOne({ username: value }).exec();
         if (user) return Promise.reject('User already exists.');
       } catch (err) {
-        res.status(400);
         return next(err);
       }
     }),
