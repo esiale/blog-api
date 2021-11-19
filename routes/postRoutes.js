@@ -14,5 +14,10 @@ router.delete(
   [secure_route, check_admin],
   post_controller.post_delete
 );
+router.put(
+  '/posts/:id',
+  [secure_route, check_admin],
+  post_controller.post_update
+);
 
 module.exports = router;

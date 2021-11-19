@@ -63,9 +63,8 @@ exports.post_delete = async (req, res, next) => {
   const { id } = req.params;
   try {
     const post = await Post.findOneAndDelete({ _id: id }).exec();
-    console.log(post);
     if (!post) return next({ status: 404, message: 'Post not found' });
-    return res.json('Post deleted successfully');
+    return res.json({ deleted: id });
   } catch (err) {
     if (err instanceof mongoose.Error.CastError) {
       return next({ status: 404, message: 'Post not found' });
@@ -73,3 +72,29 @@ exports.post_delete = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.post_update = [
+  body('body').notEmpty().withMessage("Post body can't be empty."),
+  async (req, res, next) => {
+    const { id } = req.params;
+    const updatedPost = {
+      body: req.body.body,
+    };
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next({ status: 400, message: errors.array() });
+    }
+    try {
+      const post = await Post.findOneAndUpdate({ _id: id }, updatedPost, {
+        new: true,
+      }).exec();
+      if (!post) return next({ status: 404, message: 'Post not found' });
+      return res.json(post);
+    } catch (err) {
+      if (err instanceof mongoose.Error.CastError) {
+        return next({ status: 404, message: 'Post not found' });
+      }
+      next(err);
+    }
+  },
+];
