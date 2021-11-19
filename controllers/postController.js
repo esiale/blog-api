@@ -31,9 +31,6 @@ exports.post_details = async (req, res, next) => {
     res.status(201);
     return res.json(post);
   } catch (err) {
-    if (err instanceof mongoose.Error.CastError) {
-      return next({ status: 404, message: 'Post not found' });
-    }
     next(err);
   }
 };
@@ -66,9 +63,6 @@ exports.post_delete = async (req, res, next) => {
     if (!post) return next({ status: 404, message: 'Post not found' });
     return res.json({ deleted: id });
   } catch (err) {
-    if (err instanceof mongoose.Error.CastError) {
-      return next({ status: 404, message: 'Post not found' });
-    }
     next(err);
   }
 };
@@ -91,9 +85,6 @@ exports.post_update = [
       if (!post) return next({ status: 404, message: 'Post not found' });
       return res.json(post);
     } catch (err) {
-      if (err instanceof mongoose.Error.CastError) {
-        return next({ status: 404, message: 'Post not found' });
-      }
       next(err);
     }
   },

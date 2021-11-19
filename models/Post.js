@@ -17,4 +17,14 @@ const postSchema = new Schema({
   comments: [comment],
 });
 
+postSchema.post(
+  ['findById', 'findOneAndUpdate', 'findOneAndDelete'],
+  function (err, doc, next) {
+    if (err instanceof mongoose.Error.CastError) {
+      return next({ status: 404, message: 'Post not found' });
+    }
+    next(err);
+  }
+);
+
 module.exports = mongoose.model('Post', postSchema);
