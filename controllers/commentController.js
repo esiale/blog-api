@@ -45,3 +45,18 @@ exports.comment_add = [
     }
   },
 ];
+
+exports.comment_delete = async (req, res, next) => {
+  const { postId, commentId } = req.params;
+  try {
+    const post = await Post.findById(postId).exec();
+    if (!post) return next({ status: 404, message: 'Post not found' });
+    const comment = post.comments.id(commentId);
+    if (!comment) return next({ status: 404, message: 'Comment not found' });
+    comment.remove();
+    await post.save();
+    return res.json({ deleted: commentId });
+  } catch (err) {
+    next(err);
+  }
+};
