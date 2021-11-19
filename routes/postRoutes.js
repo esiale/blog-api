@@ -7,7 +7,12 @@ const check_admin = require('../middleware/checkAdmin');
 const secure_route = passport.authenticate('jwt', { session: false });
 
 router.get('/posts', post_controller.posts_list);
-router.get('/posts/:id', post_controller.post_details);
 router.post('/posts', [secure_route, check_admin], post_controller.post_create);
+router.get('/posts/:id', post_controller.post_details);
+router.delete(
+  '/posts/:id',
+  [secure_route, check_admin],
+  post_controller.post_delete
+);
 
 module.exports = router;

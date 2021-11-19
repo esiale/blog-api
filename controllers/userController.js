@@ -33,6 +33,7 @@ exports.signup = [
     }
     try {
       await user.save();
+      res.status(201);
       return res.json('User created successfully.');
     } catch (err) {
       return next(err);

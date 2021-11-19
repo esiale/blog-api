@@ -28,6 +28,7 @@ exports.post_details = async (req, res, next) => {
   try {
     const post = await Post.findById(id).exec();
     if (!post) return next({ status: 404, message: 'Post not found' });
+    res.status(201);
     return res.json(post);
   } catch (err) {
     if (err instanceof mongoose.Error.CastError) {
@@ -57,3 +58,18 @@ exports.post_create = [
     }
   },
 ];
+
+exports.post_delete = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const post = await Post.findOneAndDelete({ _id: id }).exec();
+    console.log(post);
+    if (!post) return next({ status: 404, message: 'Post not found' });
+    return res.json('Post deleted successfully');
+  } catch (err) {
+    if (err instanceof mongoose.Error.CastError) {
+      return next({ status: 404, message: 'Post not found' });
+    }
+    next(err);
+  }
+};
