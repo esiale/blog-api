@@ -39,14 +39,14 @@ exports.post_create = [
   body('author').notEmpty().withMessage('Author is required.'),
   body('body').notEmpty().withMessage("Post body can't be empty."),
   async (req, res, next) => {
-    const post = new Post({
-      author: req.body.author,
-      body: req.body.body,
-    });
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next({ status: 400, message: errors.array() });
     }
+    const post = new Post({
+      author: req.body.author,
+      body: req.body.body,
+    });
     try {
       await post.save();
       return res.json(post);
@@ -71,13 +71,13 @@ exports.post_update = [
   body('body').notEmpty().withMessage("Post body can't be empty."),
   async (req, res, next) => {
     const { id } = req.params;
-    const updatedPost = {
-      body: req.body.body,
-    };
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next({ status: 400, message: errors.array() });
     }
+    const updatedPost = {
+      body: req.body.body,
+    };
     try {
       const post = await Post.findOneAndUpdate({ _id: id }, updatedPost, {
         new: true,

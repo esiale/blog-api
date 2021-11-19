@@ -23,14 +23,14 @@ exports.signup = [
     .isLength({ min: 6 })
     .withMessage('Password must be 6 characters or more.'),
   async (req, res, next) => {
-    const user = new User({
-      username: req.body.username,
-      password: req.body.password,
-    });
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next({ status: 400, message: errors.array() });
     }
+    const user = new User({
+      username: req.body.username,
+      password: req.body.password,
+    });
     try {
       await user.save();
       res.status(201);
