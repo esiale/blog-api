@@ -5,7 +5,8 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express');
 const cors = require('cors');
 const passport = require('passport');
-const passportConfig = require('./auth/passport');
+const morgan = require('morgan');
+const passportConfig = require('./auth/auth');
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
 const connectToDb = require('./db/mongoDb');
@@ -18,6 +19,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(passport.initialize());
+app.use(morgan('dev'));
 
 app.use('/', postRoutes);
 app.use('/user', userRoutes);

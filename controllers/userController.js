@@ -1,10 +1,9 @@
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
+const passport = require('passport');
 const { body, validationResult } = require('express-validator');
 
 exports.signup = [
-  (req, res, next) => {
-    next();
-  },
   body('username')
     .trim()
     .notEmpty()
@@ -40,3 +39,26 @@ exports.signup = [
     }
   },
 ];
+
+exports.login = (req, res, next) => {
+  passport.authenticate('local', { session: false }, (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.status(403).json(info);
+    }
+    req.login(user, { session: false }, (err) => {
+      if (err) {
+        return next(err);
+      }
+      const body = {
+        _id: user._id,
+        username: user.username,
+        permissions: user.permissions,
+      };
+      const token = jwt.sign({ user: body }, process.env.secret_token);
+      return res.json({ user: body, token });
+    });
+  })(req, res, next);
+};

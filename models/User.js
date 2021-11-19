@@ -6,11 +6,12 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
   username: { type: String, required: true },
   password: { type: String, required: true },
+  permissions: { type: Number, default: 2 },
 });
 
 userSchema.pre('save', async function (next) {
   const user = this;
-  const hash = bcrypt.hash(this.password, 10);
+  const hash = await bcrypt.hash(this.password, 10);
 
   this.password = hash;
   next();

@@ -36,3 +36,24 @@ exports.post_details = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.post_create = [
+  body('author').notEmpty().withMessage('Author is required.'),
+  body('body').notEmpty().withMessage("Post body can't be empty."),
+  async (req, res, next) => {
+    const post = new Post({
+      author: req.body.author,
+      body: req.body.body,
+    });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next({ status: 400, message: errors.array() });
+    }
+    try {
+      await post.save();
+      return res.json(post);
+    } catch (err) {
+      return next(err);
+    }
+  },
+];
