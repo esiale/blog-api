@@ -23,13 +23,13 @@ exports.commentAdd = [
     .isLength({ max: 200 })
     .withMessage('Comment must be shorter than 200 characters.'),
   async (req, res, next) => {
-    const { id } = req.params;
+    const { postId } = req.params;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next({ status: 400, message: errors.array() });
     }
     try {
-      const post = await Post.findById(id).exec();
+      const post = await Post.findById(postId).exec();
       if (!post) return next({ status: 404, message: 'Post not found' });
       const comment = {
         author: req.body.author,

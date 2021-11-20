@@ -2,18 +2,28 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const postController = require('../controllers/postController');
-const checkAdmin = require('../middleware/checkAdmin');
+const setPost = require('../permissions/setPost');
+const restrictPostAccess = require('../permissions/restrictPostAccess');
+const restrictToRole = require('../permissions/restrictToRole');
 
 const secureRoute = passport.authenticate('jwt', { session: false });
 
 router.get('/posts', postController.postsList);
-router.post('/posts', [secureRoute, checkAdmin], postController.postCreate);
-router.get('/posts/:id', postController.postDetails);
+router.post(
+  '/posts',
+  [secureRoute, restrictToRole('writer')],
+  postController.postCreate
+);
+router.get('/posts/:postId', postController.postDetails);
 router.delete(
-  '/posts/:id',
-  [secureRoute, checkAdmin],
+  '/posts/:postId',
+  [secureRoute, setPost, restrictPostAccess],
   postController.postDelete
 );
-router.put('/posts/:id', [secureRoute, checkAdmin], postController.postUpdate);
+router.put(
+  '/posts/:postId',
+  [secureRoute, setPost, restrictPostAccess],
+  postController.postUpdate
+);
 
 module.exports = router;

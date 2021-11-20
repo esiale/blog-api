@@ -29,7 +29,7 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     },
     async (jwt_payload, done) => {
-      const user = await User.findOne({ id: jwt_payload.sub }).exec();
+      const user = await User.findOne({ _id: jwt_payload.user._id }).exec();
       try {
         if (user) return done(null, user);
       } catch (err) {

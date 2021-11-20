@@ -24,9 +24,9 @@ exports.postsList = async (req, res, next) => {
 };
 
 exports.postDetails = async (req, res, next) => {
-  const { id } = req.params;
+  const { postId } = req.params;
   try {
-    const post = await Post.findById(id).exec();
+    const post = await Post.findById(postId).exec();
     if (!post) return next({ status: 404, message: 'Post not found' });
     res.status(201);
     return res.json(post);
@@ -57,11 +57,11 @@ exports.postCreate = [
 ];
 
 exports.postDelete = async (req, res, next) => {
-  const { id } = req.params;
+  const { postId } = req.params;
   try {
-    const post = await Post.findOneAndDelete({ _id: id }).exec();
+    const post = await Post.findOneAndDelete({ _id: postId }).exec();
     if (!post) return next({ status: 404, message: 'Post not found' });
-    return res.json({ deleted: id });
+    return res.json({ deleted: postId });
   } catch (err) {
     next(err);
   }
@@ -70,7 +70,7 @@ exports.postDelete = async (req, res, next) => {
 exports.postUpdate = [
   body('body').notEmpty().withMessage("Post body can't be empty."),
   async (req, res, next) => {
-    const { id } = req.params;
+    const { postId } = req.params;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next({ status: 400, message: errors.array() });
@@ -79,7 +79,7 @@ exports.postUpdate = [
       body: req.body.body,
     };
     try {
-      const post = await Post.findOneAndUpdate({ _id: id }, updatedPost, {
+      const post = await Post.findOneAndUpdate({ _id: postId }, updatedPost, {
         new: true,
       }).exec();
       if (!post) return next({ status: 404, message: 'Post not found' });
