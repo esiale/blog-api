@@ -2,7 +2,7 @@ const Post = require('../models/Post');
 const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
 
-exports.posts_list = async (req, res, next) => {
+exports.postsList = async (req, res, next) => {
   const limit = Number(req.query.limit);
   const { start } = req.query;
   let posts;
@@ -23,7 +23,7 @@ exports.posts_list = async (req, res, next) => {
   }
 };
 
-exports.post_details = async (req, res, next) => {
+exports.postDetails = async (req, res, next) => {
   const { id } = req.params;
   try {
     const post = await Post.findById(id).exec();
@@ -35,7 +35,7 @@ exports.post_details = async (req, res, next) => {
   }
 };
 
-exports.post_create = [
+exports.postCreate = [
   body('author').notEmpty().withMessage('Author is required.'),
   body('body').notEmpty().withMessage("Post body can't be empty."),
   async (req, res, next) => {
@@ -56,7 +56,7 @@ exports.post_create = [
   },
 ];
 
-exports.post_delete = async (req, res, next) => {
+exports.postDelete = async (req, res, next) => {
   const { id } = req.params;
   try {
     const post = await Post.findOneAndDelete({ _id: id }).exec();
@@ -67,7 +67,7 @@ exports.post_delete = async (req, res, next) => {
   }
 };
 
-exports.post_update = [
+exports.postUpdate = [
   body('body').notEmpty().withMessage("Post body can't be empty."),
   async (req, res, next) => {
     const { id } = req.params;

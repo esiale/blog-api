@@ -6,7 +6,11 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
   username: { type: String, required: true },
   password: { type: String, required: true },
-  permissions: { type: Number, default: 2 },
+  role: {
+    type: String,
+    default: 'basic',
+    enum: ['basic', 'writer', 'admin'],
+  },
 });
 
 userSchema.pre('save', async function (next) {

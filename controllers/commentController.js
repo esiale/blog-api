@@ -2,7 +2,7 @@ const Post = require('../models/Post');
 const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
 
-exports.comment_add = [
+exports.commentAdd = [
   body('author')
     .trim()
     .notEmpty()
@@ -46,7 +46,7 @@ exports.comment_add = [
   },
 ];
 
-exports.comment_delete = async (req, res, next) => {
+exports.commentDelete = async (req, res, next) => {
   const { postId, commentId } = req.params;
   try {
     const post = await Post.findById(postId).exec();
