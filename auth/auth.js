@@ -9,8 +9,7 @@ passport.use(
     let user;
     try {
       user = await User.findOne({ username }).exec();
-      const isValidPassword = await user.isValidPassword(password);
-      if (!user || !isValidPassword) {
+      if (!user || !(await await user.isValidPassword(password))) {
         return done(null, false, {
           message: 'Incorrect username and/or password.',
         });
