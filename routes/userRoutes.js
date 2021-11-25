@@ -8,8 +8,6 @@ const restrictUserAccess = require('../permissions/restrictUserAccess');
 
 const secureRoute = passport.authenticate('jwt', { session: false });
 
-router.post('/signup', userController.signup);
-router.post('/login', userController.login);
 router.get(
   '/',
   [secureRoute, restrictToRole('writer')],

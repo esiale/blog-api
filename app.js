@@ -7,6 +7,7 @@ const cors = require('cors');
 const passport = require('passport');
 const morgan = require('morgan');
 const passportConfig = require('./auth/auth');
+const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
 const commentRoutes = require('./routes/commentRoutes');
@@ -23,6 +24,7 @@ app.use(passport.initialize());
 app.use(morgan('dev'));
 
 app.use('/', postRoutes);
+app.use('/auth', authRoutes);
 app.use('/posts', commentRoutes);
 app.use('/user', userRoutes);
 
