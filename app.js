@@ -17,7 +17,12 @@ connectToDb();
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: [process.env.cms_url, process.env.front_url],
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(passport.initialize());
