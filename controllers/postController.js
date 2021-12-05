@@ -37,6 +37,7 @@ exports.postDetails = async (req, res, next) => {
 
 exports.postCreate = [
   body('author').notEmpty().withMessage('Author is required.'),
+  body('title').notEmpty().withMessage("Title can't be empty."),
   body('body').notEmpty().withMessage("Post body can't be empty."),
   async (req, res, next) => {
     const errors = validationResult(req);
@@ -45,6 +46,7 @@ exports.postCreate = [
     }
     const post = new Post({
       author: req.body.author,
+      title: req.body.title,
       body: req.body.body,
     });
     try {
@@ -68,6 +70,7 @@ exports.postDelete = async (req, res, next) => {
 };
 
 exports.postUpdate = [
+  body('title').notEmpty().withMessage("Title can't be empty."),
   body('body').notEmpty().withMessage("Post body can't be empty."),
   async (req, res, next) => {
     const { postId } = req.params;
@@ -76,6 +79,7 @@ exports.postUpdate = [
       return next({ status: 400, message: errors.array() });
     }
     const updatedPost = {
+      title: req.body.title,
       body: req.body.body,
     };
     try {
