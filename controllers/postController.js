@@ -39,6 +39,7 @@ exports.postCreate = [
   body('author').notEmpty().withMessage('Author is required.'),
   body('title').notEmpty().withMessage("Title can't be empty."),
   body('body').notEmpty().withMessage("Post body can't be empty."),
+  body('imageUrl').notEmpty().withMessage('Image is required.'),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -48,6 +49,7 @@ exports.postCreate = [
       author: req.body.author,
       title: req.body.title,
       body: req.body.body,
+      imageUrl: req.body.imageUrl,
     });
     try {
       await post.save();
@@ -78,16 +80,24 @@ exports.postUpdate = [
     if (!errors.isEmpty()) {
       return next({ status: 400, message: errors.array() });
     }
-    const updatedPost = {
-      title: req.body.title,
-      body: req.body.body,
-    };
     try {
-      const post = await Post.findOneAndUpdate({ _id: postId }, updatedPost, {
-        new: true,
-      }).exec();
-      if (!post) return next({ status: 404, message: 'Post not found' });
-      return res.json(post);
+      const post = await Post.findOne({ _id: postId });
+      const updatedPost = {
+        title: req.body.title,
+        body: req.body.body,
+        date: req.body.date ?? post.date,
+        imageUrl: req.body.imageUrl ?? post.imageUrl,
+      };
+      const uploadedPost = await Post.findOneAndUpdate(
+        { _id: postId },
+        updatedPost,
+        {
+          new: true,
+        }
+      ).exec();
+      if (!post || !uploadedPost)
+        return next({ status: 404, message: 'Post not found' });
+      return res.json(uploadedPost);
     } catch (err) {
       next(err);
     }
