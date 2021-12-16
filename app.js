@@ -10,6 +10,7 @@ const passportConfig = require('./auth/auth');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
+const s3Route = require('./routes/s3Route');
 const commentRoutes = require('./routes/commentRoutes');
 const connectToDb = require('./db/mongoDb');
 
@@ -29,6 +30,7 @@ app.use(passport.initialize());
 app.use(morgan('dev'));
 
 app.use('/', postRoutes);
+app.use('/', s3Route);
 app.use('/auth', authRoutes);
 app.use('/posts', commentRoutes);
 app.use('/user', userRoutes);

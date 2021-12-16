@@ -43,7 +43,16 @@ exports.postCreate = [
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return next({ status: 400, message: errors.array() });
+      const getErrorsMessage = errors
+        .array({ onlyFirstError: true })
+        .map((error) => {
+          return error.msg;
+        });
+      const mergedErrors = getErrorsMessage.join('. ');
+      return next({
+        status: 400,
+        message: mergedErrors,
+      });
     }
     const post = new Post({
       author: req.body.author,
