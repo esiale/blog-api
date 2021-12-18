@@ -19,13 +19,19 @@ router.get(
 
     const s3 = new aws.S3();
     const fileType = req.query['file-type'];
+    const fileSize = req.query['file-size'];
     const fileName = uuidv4();
     const s3Params = {
       Bucket: process.env.S3_BUCKET_NAME,
       Key: fileName,
       Expires: 60,
-      ContentType: fileType,
     };
+
+    if (fileType !== 'image/jpeg') {
+      return next({ status: 415, message: 'Invalid file format. Use .jpeg' });
+    } else if (fileSize > 5242880) {
+      return next({ status: 413, message: 'File is larger than 5mbs' });
+    }
 
     s3.getSignedUrl('putObject', s3Params, (err, data) => {
       if (err) {
