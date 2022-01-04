@@ -1,16 +1,21 @@
 const Post = require('../models/Post');
+const User = require('../models/User');
 const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
 
 exports.postsList = async (req, res, next) => {
-  const limit = Number(req.query.limit);
-  const { start } = req.query;
-  let posts;
+  const { start, author } = req.query;
+  const limit = Number(req.query.limit) || 0;
+  let posts, authorQuery;
   try {
+    if (author) authorQuery = { author };
     if (!start) {
-      posts = await Post.find().sort({ _id: -1 }).limit(limit).exec();
+      posts = await Post.find(authorQuery)
+        .sort({ _id: -1 })
+        .limit(limit)
+        .exec();
     } else {
-      posts = await Post.find({ _id: { $lt: start } })
+      posts = await Post.find({ _id: { $lt: start }, ...authorQuery })
         .sort({ _id: -1 })
         .limit(limit)
         .exec();
