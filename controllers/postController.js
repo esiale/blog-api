@@ -12,15 +12,17 @@ exports.postsList = async (req, res, next) => {
       posts = await Post.find(authorQuery)
         .sort({ _id: -1 })
         .limit(limit)
+        .populate('author', '-password')
         .exec();
     } else {
       posts = await Post.find({ _id: { $lt: start }, ...authorQuery })
         .sort({ _id: -1 })
         .limit(limit)
+        .populate('author', '-password')
         .exec();
     }
     const count = await Post.find().count();
-    const next = posts[posts.length - 1]._id;
+    const next = posts.length && start ? posts[posts.length - 1]._id : null;
     return res.json({ count, next, posts });
   } catch (err) {
     next(err);
