@@ -87,8 +87,8 @@ exports.postDelete = async (req, res, next) => {
 };
 
 exports.postUpdate = [
-  body('title').notEmpty().withMessage("Title can't be empty."),
-  body('body').notEmpty().withMessage("Post body can't be empty."),
+  body('title').optional().notEmpty().withMessage("Title can't be empty."),
+  body('body').optional().notEmpty().withMessage("Post body can't be empty."),
   async (req, res, next) => {
     const { postId } = req.params;
     const errors = validationResult(req);
@@ -100,8 +100,9 @@ exports.postUpdate = [
       const updatedPost = {
         title: req.body.title,
         body: req.body.body,
-        date: req.body.date ?? post.date,
-        imageUrl: req.body.imageUrl ?? post.imageUrl,
+        date: req.body.date,
+        imageUrl: req.body.imageUrl,
+        published: req.body.published,
       };
       const uploadedPost = await Post.findOneAndUpdate(
         { _id: postId },
