@@ -1,5 +1,6 @@
 const Post = require('../models/Post');
 const mongoose = require('mongoose');
+const presignS3Url = require('../utils/presignS3Url');
 const { body, validationResult } = require('express-validator');
 
 exports.postsList = async (req, res, next) => {
@@ -23,6 +24,14 @@ exports.postsList = async (req, res, next) => {
     }
     const count = await Post.find().count();
     const next = posts.length && start ? posts[posts.length - 1]._id : null;
+    const presignPostsImageUrls = (posts) => {
+      const promises = posts.map(async (post) => {
+        return presignS3Url(post.imageUrl);
+      });
+      return Promise.all(promises);
+    };
+    await presignPostsImageUrls(posts);
+    console.log(posts);
     return res.json({ count, next, posts });
   } catch (err) {
     next(err);
@@ -34,6 +43,7 @@ exports.postDetails = async (req, res, next) => {
   try {
     const post = await Post.findById(postId).exec();
     if (!post) return next({ status: 404, message: 'Post not found' });
+    post.imageUrl = await presignS3Url(post.imageUrl);
     res.status(201);
     return res.json(post);
   } catch (err) {

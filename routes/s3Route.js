@@ -2,22 +2,20 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const restrictToRole = require('../permissions/restrictToRole');
-const aws = require('aws-sdk');
+const { S3Client } = require('@aws-sdk/client-s3');
+const { createPresignedPost } = require('@aws-sdk/s3-presigned-post');
 
 const secureRoute = passport.authenticate('jwt', { session: false });
 
 router.post(
   '/sign-s3',
   [secureRoute, restrictToRole('writer')],
-  (req, res, next) => {
+  async (req, res, next) => {
     const { name, type } = req.body;
-    aws.config.update({
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      accessAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    const client = new S3Client({
       region: 'eu-central-1',
     });
-    const s3 = new aws.S3();
-    const s3Params = {
+    const params = {
       Bucket: process.env.S3_BUCKET_NAME,
       Expires: 60,
       Conditions: [
@@ -25,18 +23,17 @@ router.post(
         { 'Content-Type': 'image/jpeg' },
       ],
       Fields: {
-        key: `blog/${name}`,
         'Content-Type': type,
         success_action_status: '201',
       },
+      Key: `${name}`,
     };
-
-    s3.createPresignedPost(s3Params, (err, data) => {
-      if (err) {
-        return next({ status: 500, message: err.message });
-      }
+    try {
+      const data = await createPresignedPost(client, params);
       return res.json(data);
-    });
+    } catch (err) {
+      return next({ status: 500, message: err.message });
+    }
   }
 );
 
