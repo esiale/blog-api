@@ -12,7 +12,7 @@ const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
 const s3Route = require('./routes/s3Route');
 const commentRoutes = require('./routes/commentRoutes');
-const connectToDb = require('./db/mongoDb');
+const connectToDb = require('./config/mongoDb');
 
 connectToDb();
 

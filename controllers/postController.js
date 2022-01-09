@@ -1,6 +1,7 @@
 const Post = require('../models/Post');
 const mongoose = require('mongoose');
 const presignS3Url = require('../utils/presignS3Url');
+const deleteS3Object = require('../utils/deleteS3Object');
 const { body, validationResult } = require('express-validator');
 
 exports.postsList = async (req, res, next) => {
@@ -26,12 +27,11 @@ exports.postsList = async (req, res, next) => {
     const next = posts.length && start ? posts[posts.length - 1]._id : null;
     const presignPostsImageUrls = (posts) => {
       const promises = posts.map(async (post) => {
-        return presignS3Url(post.imageUrl);
+        return (post.imageUrl = await presignS3Url(post.imageUrl));
       });
       return Promise.all(promises);
     };
     await presignPostsImageUrls(posts);
-    console.log(posts);
     return res.json({ count, next, posts });
   } catch (err) {
     next(err);
@@ -107,6 +107,9 @@ exports.postUpdate = [
     }
     try {
       const post = await Post.findOne({ _id: postId });
+      if (req.body.imageUrl) {
+        await deleteS3Object(post.imageUrl);
+      }
       const updatedPost = {
         title: req.body.title,
         body: req.body.body,

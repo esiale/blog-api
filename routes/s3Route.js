@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const restrictToRole = require('../permissions/restrictToRole');
-const { S3Client } = require('@aws-sdk/client-s3');
+const s3Client = require('../config/s3');
 const { createPresignedPost } = require('@aws-sdk/s3-presigned-post');
 
 const secureRoute = passport.authenticate('jwt', { session: false });
@@ -12,9 +12,6 @@ router.post(
   [secureRoute, restrictToRole('writer')],
   async (req, res, next) => {
     const { name, type } = req.body;
-    const client = new S3Client({
-      region: 'eu-central-1',
-    });
     const params = {
       Bucket: process.env.S3_BUCKET_NAME,
       Expires: 60,
@@ -29,7 +26,7 @@ router.post(
       Key: `${name}`,
     };
     try {
-      const data = await createPresignedPost(client, params);
+      const data = await createPresignedPost(s3Client, params);
       return res.json(data);
     } catch (err) {
       return next({ status: 500, message: err.message });
