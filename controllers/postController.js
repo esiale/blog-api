@@ -90,6 +90,7 @@ exports.postDelete = async (req, res, next) => {
   try {
     const post = await Post.findOneAndDelete({ _id: postId }).exec();
     if (!post) return next({ status: 404, message: 'Post not found' });
+    await deleteS3Object(post.imageUrl);
     return res.json({ deleted: postId });
   } catch (err) {
     next(err);
